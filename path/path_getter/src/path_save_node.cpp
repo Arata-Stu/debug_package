@@ -12,6 +12,9 @@ public:
 
     subscription_ = this->create_subscription<simple_path_interface::msg::PathCoordinates>(
       "path_coordinates", 1, std::bind(&PathCoordinatesSubscriber::topic_callback, this, std::placeholders::_1));
+    
+    // Publisherの作成
+    publisher_ = this->create_publisher<simple_path_interface::msg::PathCoordinates>("adjusted_path_coordinates", 10);
   }
 
 private:
@@ -28,35 +31,34 @@ private:
   {
     RCLCPP_INFO(this->get_logger(), "Received PathCoordinates message");
 
+    // メッセージからコピーを作成してベクトルを調整
+    auto adjusted_msg = std::make_shared<simple_path_interface::msg::PathCoordinates>(*msg);
+
     // Pad center line points
-    auto center_x = msg->center_x;
-    auto center_y = msg->center_y;
-    pad_vector(center_x, max_center_points_);
-    pad_vector(center_y, max_center_points_);
+    pad_vector(adjusted_msg->center_x, max_center_points_);
+    pad_vector(adjusted_msg->center_y, max_center_points_);
 
     // Pad left bound points
-    auto left_bound_x = msg->left_bound_x;
-    auto left_bound_y = msg->left_bound_y;
-    pad_vector(left_bound_x, max_side_points_);
-    pad_vector(left_bound_y, max_side_points_);
+    pad_vector(adjusted_msg->left_bound_x, max_side_points_);
+    pad_vector(adjusted_msg->left_bound_y, max_side_points_);
 
     // Pad right bound points
-    auto right_bound_x = msg->right_bound_x;
-    auto right_bound_y = msg->right_bound_y;
-    pad_vector(right_bound_x, max_side_points_);
-    pad_vector(right_bound_y, max_side_points_);
+    pad_vector(adjusted_msg->right_bound_x, max_side_points_);
+    pad_vector(adjusted_msg->right_bound_y, max_side_points_);
 
     // Log the lengths of the arrays
-    RCLCPP_INFO(this->get_logger(), "Center line points: %zu", center_x.size());
-    RCLCPP_INFO(this->get_logger(), "Left bound points: %zu", left_bound_x.size());
-    RCLCPP_INFO(this->get_logger(), "Right bound points: %zu", right_bound_x.size());
+    RCLCPP_INFO(this->get_logger(), "Center line points: %zu", adjusted_msg->center_x.size());
+    RCLCPP_INFO(this->get_logger(), "Left bound points: %zu", adjusted_msg->left_bound_x.size());
+    RCLCPP_INFO(this->get_logger(), "Right bound points: %zu", adjusted_msg->right_bound_x.size());
 
-    // Here you can process the padded vectors as needed
+    // 調整されたメッセージをパブリッシュ
+    publisher_->publish(*adjusted_msg);
   }
 
   int max_center_points_;
   int max_side_points_;
   rclcpp::Subscription<simple_path_interface::msg::PathCoordinates>::SharedPtr subscription_;
+  rclcpp::Publisher<simple_path_interface::msg::PathCoordinates>::SharedPtr publisher_;
 };
 
 int main(int argc, char * argv[])

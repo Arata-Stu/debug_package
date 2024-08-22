@@ -2,13 +2,15 @@
     <!-- path_get_nodeの設定 -->
     <node pkg="path_getter" exec="path_get_node" name="path_get_node">
         <remap from="path_with_lane_id" to="planning/scenario_planning/lane_driving/behavior_planning/path_with_lane_id" />
-        <remap from="path_coordinates" to="debug/path_coordinates" />
+        <remap from="path_coordinates" to="path_coordinates" />
     </node>
 
     <node pkg="path_getter" exec="path_save_node" name="path_save_node" output="screen">
         <param name="max_center_points" value="0" />
         <param name="max_side_points" value="20" />
-        <remap from="path_coordinates" to="debug/path_coordinates" />
+        <remap from="path_coordinates" to="path_coordinates" />
+        <remap from="adjusted_path_coordinates" to="debug/path_coordinates" />
+        
     </node>
 
     

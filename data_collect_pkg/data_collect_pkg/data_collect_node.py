@@ -64,12 +64,24 @@ class DataAggregatorNode(Node):
         }
 
         # HDF5 file setup
-        self.h5_file_path = 'data.h5'
-        if os.path.exists(self.h5_file_path):
-            os.remove(self.h5_file_path)  # Remove existing file
-        self.h5_file = h5py.File(self.h5_file_path, 'w')
+        self.create_h5_file()
 
         self.timer_ = None  # Timer will be initialized after receiving all data
+
+    def create_h5_file(self):
+        # ディレクトリが存在しない場合は作成
+        if not os.path.exists('data'):
+            os.makedirs('data')
+
+        # 'data' ディレクトリ内のファイル数をカウント
+        existing_files = [f for f in os.listdir('data') if os.path.isfile(os.path.join('data', f))]
+        episode_number = len(existing_files) + 1
+
+        # エピソードのファイル名を生成
+        self.h5_file_path = f'data/episode{episode_number}.h5'
+
+        # HDF5ファイルを新たに作成
+        self.h5_file = h5py.File(self.h5_file_path, 'w')
 
     def control_callback(self, msg):
         self.steering_angle_ = msg.lateral.steering_tire_angle

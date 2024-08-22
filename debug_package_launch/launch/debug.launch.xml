@@ -1,0 +1,27 @@
+<launch>
+    <!-- path_get_nodeの設定 -->
+    <node pkg="path_getter" exec="path_get_node" name="path_get_node">
+        <remap from="path_with_lane_id" to="planning/scenario_planning/lane_driving/behavior_planning/path_with_lane_id" />
+        <remap from="path_coordinates" to="debug/path_coordinates" />
+    </node>
+
+    <node pkg="path_getter" exec="path_save_node" name="path_save_node" output="screen">
+        <param name="max_center_points" value="0" />
+        <param name="max_side_points" value="20" />
+        <remap from="path_coordinates" to="debug/path_coordinates" />
+    </node>
+
+    
+
+    <!-- object_info_nodeの設定 -->
+    <node pkg="object_getter" exec="object_info_node" name="object_info_node">
+        <remap from="/objects" to="aichallenge/objects" />
+        <remap from="/filtered_objects" to="debug/filtered_objects" />
+    </node>
+
+    <!-- object_save_nodeの設定 -->
+    <node pkg="object_getter" exec="object_save_node" name="object_save_node">
+        <remap from="filtered_objects" to="/aichallenge/filtered_objects" />
+    </node>
+
+</launch>

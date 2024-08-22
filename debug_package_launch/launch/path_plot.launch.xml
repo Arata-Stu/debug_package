@@ -1,0 +1,9 @@
+<launch>
+    <node pkg="path_plotter" exec="path_plot_node" name="path_plot_node">
+        <param name="max_center_points" value="1" />
+        <param name="max_side_points" value="20" />
+        <param name="show_center_line" value="True" />
+        <param name="show_side_lines" value="True" />
+        <remap from="path_coordinates" to="debug/path_coordinates" />
+    </node>
+</launch>

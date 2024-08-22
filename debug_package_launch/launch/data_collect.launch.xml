@@ -1,0 +1,8 @@
+<launch>
+    <!-- path_get_nodeの設定 -->
+    <node pkg="data_collect_pkg" exec="data_aggregator_node" name="path_get_node">
+        
+    </node>
+
+
+</launch>
